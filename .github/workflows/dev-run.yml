@@ -53,7 +53,12 @@ jobs:
           echo "VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY" >> .env.production
 
           echo "=== Building Production Bundle ==="
-          npx vite build --base=/${{ github.event.repository.name }}/
+          npx vite build --base=/Gods-eye-view/
+
+          echo "=== Copying Cesium Engine Assets ==="
+          mkdir -p dist/Build/Cesium
+          cp -r node_modules/cesium/Build/Cesium/* dist/Build/Cesium/ || true
+          cp -r node_modules/cesium/Build/Cesium/* dist/ || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

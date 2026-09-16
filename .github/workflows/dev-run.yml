@@ -12,39 +12,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Diagnostic Step: Prints files so you can verify paths if it fails again
-      - name: Inspect Repository Structure
-        run: |
-          echo "=== Root Files ==="
-          ls -la
-          echo "=== Finding package.json location ==="
-          find . -name "package.json"
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Install dependencies
+      # Manually clone, step inside, and execute sequentially in one workspace session
+      - name: Clone and Spin Up Environment
         run: |
-          TARGET_DIR=$(dirname $(find . -name "package.json" | head -n 1))
-          echo "Target application folder located at: $TARGET_DIR"
-          cd $TARGET_DIR
+          git clone https://github.com
+          cd gods-eye-view
+          
+          echo "=== Installing Dependencies ==="
           npm install
-
-      - name: Run Doctor check
-        run: |
-          TARGET_DIR=$(dirname $(find . -name "package.json" | head -n 1))
-          cd $TARGET_DIR
+          
+          echo "=== Running Doctor Environment Check ==="
           npm run doctor
-
-      - name: Run Dev Server
-        run: |
-          TARGET_DIR=$(dirname $(find . -name "package.json" | head -n 1))
-          cd $TARGET_DIR
+          
+          echo "=== Starting Dev Server ==="
           npm run dev &
           sleep 15
           

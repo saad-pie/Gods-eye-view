@@ -36,13 +36,12 @@ jobs:
             git clone https://github.com/bilawalsidhu/gods-eye-view
           fi
 
-      - name: Install dependencies & Cesium plugin
+      - name: Install dependencies
         run: |
           cd gods-eye-view
-          npm install
-          npm install -D vite-plugin-cesium @vitejs/plugin-react
+          npm install --legacy-peer-deps
 
-      - name: Generate Vite Config & Build
+      - name: Build Production Bundle
         env:
           VITE_CESIUM_ION_TOKEN: ${{ secrets.VITE_CESIUM_ION_TOKEN }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
@@ -53,20 +52,8 @@ jobs:
           echo "VITE_CESIUM_ION_TOKEN=$VITE_CESIUM_ION_TOKEN" >> .env.production
           echo "VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY" >> .env.production
 
-          echo "=== Creating vite.config.js ==="
-          cat << 'EOF' > vite.config.mjs
-          import { defineConfig } from 'vite';
-          import react from '@vitejs/plugin-react';
-          import cesium from 'vite-plugin-cesium';
-
-          export default defineConfig({
-            plugins: [react(), cesium()],
-            base: '/${{ github.event.repository.name }}/',
-          });
-          EOF
-
           echo "=== Building Production Bundle ==="
-          npx vite build
+          npx vite build --base=/${{ github.event.repository.name }}/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

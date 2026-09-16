@@ -5,35 +5,30 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch: # Allows you to manually trigger the workflow from the Actions tab
+  workflow_dispatch: 
 
 jobs:
   build-and-run:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Automatically clone the repository into the workspace
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up the correct Node.js version required by the project
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24' # Configured for Node 24.x per project requirements
-          cache: 'npm'       # Caches dependencies to speed up future runs
+          node-version: '24'
+          # Removed cache: 'npm' because it requires a package-lock.json
 
-      # Step 3: Install clean dependencies
       - name: Install dependencies
-        run: npm ci
+        # Changed from 'npm ci' to 'npm install'
+        run: npm install
 
-      # Step 4: Run the environment/health check script
       - name: Run Doctor check
         run: npm run doctor
 
-      # Step 5: Start the development server
-      # Note: Background flag & wait prevent the workflow from hanging infinitely
       - name: Run Dev Server
         run: |
           npm run dev &
-          sleep 10 
+          sleep 10

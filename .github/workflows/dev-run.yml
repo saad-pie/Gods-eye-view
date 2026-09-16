@@ -20,7 +20,7 @@ jobs:
       # Manually clone, step inside, and execute sequentially in one workspace session
       - name: Clone and Spin Up Environment
         run: |
-          git clone https://github.com
+          git clone https://github.com/bilawalsidhu/gods-eye-view
           cd gods-eye-view
           
           echo "=== Installing Dependencies ==="

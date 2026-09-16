@@ -1,14 +1,26 @@
-name: Run God's Eye View Dev Environment
+name: Deploy God's Eye View to GitHub Pages
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch: 
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run and latest checkout
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
-  build-and-run:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps: deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
     steps:
@@ -17,19 +29,30 @@ jobs:
         with:
           node-version: '24'
 
-      # Manually clone, step inside, and execute sequentially in one workspace session
-      - name: Clone and Spin Up Environment
+      - name: Clone and Build Production Assets
         run: |
-          git clone https://github.com/bilawalsidhu/gods-eye-view
+          git clone https://github.com
           cd gods-eye-view
           
           echo "=== Installing Dependencies ==="
           npm install
           
-          echo "=== Running Doctor Environment Check ==="
-          npm run doctor
-          
-          echo "=== Starting Dev Server ==="
-          npm run dev &
-          sleep 15
-          
+          echo "=== Building App Stacks ==="
+          # Vite requires the repository subfolder name or root designation for asset routing
+          npm run build -- --base=/${{ github.event.repository.name }}/
+
+      # Step 3: Setup GitHub Pages hosting configuration
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Step 4: Bundle and upload the built dist directory
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './gods-eye-view/dist'
+
+      # Step 5: Publish the files live onto the web
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        

@@ -20,7 +20,7 @@ jobs:
   build-and-deploy:
     environment:
       name: github-pages
-      url: ${{ steps: deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
     steps:
@@ -38,20 +38,16 @@ jobs:
           npm install
           
           echo "=== Building App Stacks ==="
-          # Vite requires the repository subfolder name or root designation for asset routing
           npm run build -- --base=/${{ github.event.repository.name }}/
 
-      # Step 3: Setup GitHub Pages hosting configuration
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Step 4: Bundle and upload the built dist directory
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './gods-eye-view/dist'
 
-      # Step 5: Publish the files live onto the web
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

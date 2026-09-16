@@ -31,7 +31,7 @@ jobs:
 
       - name: Clone and Build Production Assets
         run: |
-          git clone https://github.com
+          git clone https://github.com/bilawalsidhu/gods-eye-view
           cd gods-eye-view
           
           echo "=== Installing Dependencies ==="

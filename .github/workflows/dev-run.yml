@@ -39,8 +39,8 @@ jobs:
       - name: Install dependencies & Cesium plugin
         run: |
           cd gods-eye-view
-          npm install --no-immutable
-          npm install -D vite-plugin-cesium
+          npm install
+          npm install -D vite-plugin-cesium @vitejs/plugin-react
 
       - name: Generate Vite Config & Build
         env:
@@ -54,7 +54,7 @@ jobs:
           echo "VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY" >> .env.production
 
           echo "=== Creating vite.config.js ==="
-          cat << 'EOF' > vite.config.js
+          cat << 'EOF' > vite.config.mjs
           import { defineConfig } from 'vite';
           import react from '@vitejs/plugin-react';
           import cesium from 'vite-plugin-cesium';

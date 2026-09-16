@@ -7,14 +7,13 @@ on:
     branches: [ main ]
   workflow_dispatch: 
 
-# Force all run steps to execute in the workspace root or targeted subfolder
 defaults:
   run:
     working-directory: ./
 
 jobs:
   build-and-run:
-    runs-runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository

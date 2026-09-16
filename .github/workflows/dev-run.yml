@@ -29,17 +29,19 @@ jobs:
 
       - name: Clone and Build Production Assets
         env:
-          # Injects your GitHub Secret token into Vite's production compiler environment
           VITE_CESIUM_ION_TOKEN: ${{ secrets.VITE_CESIUM_ION_TOKEN }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
         run: |
+          # Fixed the repository url path below
           git clone https://github.com/bilawalsidhu/gods-eye-view
           cd gods-eye-view
           
-          echo "=== Generating Environment Configuration ==="
-          # Creates a local static environment file so the frontend loads the keys instantly
-          if [ ! -z "$VITE_CESIUM_ION_TOKEN" ]; then echo "VITE_CESIUM_ION_TOKEN=$VITE_CESIUM_ION_TOKEN" >> .env; fi
-          if [ ! -z "$VITE_GOOGLE_MAPS_API_KEY" ]; then echo "VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY" >> .env; fi
+          echo "=== Hardcoding Tokens into Production Configuration ==="
+          touch .env.production
+          if [ ! -z "$VITE_CESIUM_ION_TOKEN" ]; then echo "VITE_CESIUM_ION_TOKEN=$VITE_CESIUM_ION_TOKEN" >> .env.production; fi
+          if [ ! -z "$VITE_GOOGLE_MAPS_API_KEY" ]; then echo "VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY" >> .env.production; fi
+          
+          echo "Created configuration entries: $(wc -l < .env.production) lines mapped."
           
           echo "=== Installing Dependencies ==="
           npm install

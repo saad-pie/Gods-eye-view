@@ -41,7 +41,7 @@ jobs:
           cd gods-eye-view
           npm install --legacy-peer-deps
 
-      - name: Build Production Bundle
+      - name: Inject Cesium CDN Script & Build
         env:
           VITE_CESIUM_ION_TOKEN: ${{ secrets.VITE_CESIUM_ION_TOKEN }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
@@ -52,13 +52,11 @@ jobs:
           echo "VITE_CESIUM_ION_TOKEN=$VITE_CESIUM_ION_TOKEN" >> .env.production
           echo "VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY" >> .env.production
 
+          echo "=== Injecting Cesium Global Scripts into index.html ==="
+          sed -i 's|</head>|<link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.119/Build/Cesium/Widgets/widgets.css"><script src="https://cesium.com/downloads/cesiumjs/releases/1.119/Build/Cesium/Cesium.js"></script></head>|g' index.html
+
           echo "=== Building Production Bundle ==="
           npx vite build --base=/Gods-eye-view/
-
-          echo "=== Copying Cesium Engine Assets ==="
-          mkdir -p dist/Build/Cesium
-          cp -r node_modules/cesium/Build/Cesium/* dist/Build/Cesium/ || true
-          cp -r node_modules/cesium/Build/Cesium/* dist/ || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

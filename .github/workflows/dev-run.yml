@@ -30,17 +30,34 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm ci || npm install
+      - name: Install dependencies & Cesium plugin
+        run: |
+          npm ci || npm install
+          npm install -D vite-plugin-cesium
 
-      - name: Build production bundle
+      - name: Generate Vite Config & Build
         env:
           VITE_CESIUM_ION_TOKEN: ${{ secrets.VITE_CESIUM_ION_TOKEN }}
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
         run: |
+          echo "=== Writing .env.production ==="
           echo "VITE_CESIUM_ION_TOKEN=$VITE_CESIUM_ION_TOKEN" >> .env.production
           echo "VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY" >> .env.production
-          npx vite build --base=/${{ github.event.repository.name }}/
+
+          echo "=== Creating vite.config.js on the fly ==="
+          cat << 'EOF' > vite.config.js
+          import { defineConfig } from 'vite';
+          import react from '@vitejs/plugin-react';
+          import cesium from 'vite-plugin-cesium';
+
+          export default defineConfig({
+            plugins: [react(), cesium()],
+            base: '/${{ github.event.repository.name }}/',
+          });
+          EOF
+
+          echo "=== Building Production Bundle ==="
+          npx vite build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
